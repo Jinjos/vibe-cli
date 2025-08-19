@@ -1,0 +1,47 @@
+{
+  "name": "vibe-cli",
+  "version": "1.0.0",
+  "description": "🔥 One vibe to rule them all - Unify AI coding rules across Claude, Cursor, Copilot & Gemini",
+  "main": "lib/index.js",
+  "bin": {
+    "vibe": "bin/vibe"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "dev": "node bin/vibe",
+    "build": "echo 'No build step required'",
+    "publish-npm": "npm publish"
+  },
+  "keywords": [
+    "ai",
+    "coding",
+    "rules",
+    "claude",
+    "cursor", 
+    "copilot",
+    "gemini",
+    "unified",
+    "standards",
+    "vibe"
+  ],
+  "author": "Jinjos",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.0.0",
+    "glob": "^10.3.0",
+    "gray-matter": "^4.0.3",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jinjos/vibe-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jinjos/vibe-cli/issues"
+  },
+  "homepage": "https://github.com/Jinjos/vibe-cli#readme"
+}

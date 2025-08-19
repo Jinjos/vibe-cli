@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+
+const { Command } = require('commander');
+const chalk = require('chalk');
+const { initializeVibeSystem } = require('../lib/init');
+const { showStatus } = require('../lib/status');
+const { fixRuleIssues } = require('../lib/fix');
+
+const program = new Command();
+
+// ASCII Art for vibe-cli
+const vibeArt = `
+${chalk.magenta('🔥 vibe-cli')} ${chalk.gray('- Universal AI Rules System')}
+`;
+
+program
+  .name('vibe')
+  .description('🔥 Universal AI Rules System - Unify AI coding assistant rules across all platforms')
+  .version('1.0.0')
+  .addHelpText('before', vibeArt);
+
+program
+  .command('init')
+  .description('Initialize the vibe system in current project')
+  .option('--platforms <platforms>', 'Comma-separated platforms (cursor,claude,copilot,gemini)', 'auto')
+  .option('--force', 'Overwrite existing configurations')
+  .option('--backup', 'Create backup of existing rule files', true)
+  .action(async (options) => {
+    try {
+      console.log(vibeArt);
+      await initializeVibeSystem(process.cwd(), options);
+    } catch (error) {
+      console.error(chalk.red('❌ Error initializing vibe system:'), error.message);
+      if (process.env.DEBUG) {
+        console.error(error.stack);
+      }
+      process.exit(1);
+    }
+  });
+
+program
+  .command('status')
+  .description('Show vibe system status and detected platforms')
+  .option('-v, --verbose', 'Show detailed information including rule analysis')
+  .action(async (options) => {
+    try {
+      await showStatus(process.cwd(), options);
+    } catch (error) {
+      console.error(chalk.red('❌ Error showing status:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
+  .command('fix')
+  .description('Automatically fix detected rule configuration issues')
+  .option('--dry-run', 'Show what would be fixed without making changes')
+  .option('--backup', 'Create backup before fixing', true)
+  .action(async (options) => {
+    try {
+      await fixRuleIssues(process.cwd(), options);
+    } catch (error) {
+      console.error(chalk.red('❌ Error fixing issues:'), error.message);
+      process.exit(1);
+    }
+  });
+
+// Handle unknown commands
+program.on('command:*', () => {
+  console.error(chalk.red('❌ Unknown command:'), program.args.join(' '));
+  console.log(chalk.yellow('💡 Run'), chalk.cyan('vibe --help'), chalk.yellow('to see available commands'));
+  process.exit(1);
+});
+
+// Show help if no command provided
+if (!process.argv.slice(2).length) {
+  program.outputHelp();
+}
+
+program.parse();
