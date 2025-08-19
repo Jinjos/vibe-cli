@@ -1,7 +1,7 @@
 {
-  "name": "vibe-cli",
+  "name": "@jinjos/vibe-cli",
   "version": "1.0.0",
-  "description": "🔥 One vibe to rule them all - Unify AI coding rules across Claude, Cursor, Copilot & Gemini",
+  "description": "One vibe to rule them all - Combined AI coding assistant rules across Claude Code, Cursor, GitHub Copilot, and Gemini CLI",
   "main": "lib/index.js",
   "bin": {
     "vibe": "bin/vibe"
@@ -30,8 +30,8 @@
     "commander": "^11.0.0",
     "glob": "^10.3.0",
     "gray-matter": "^4.0.3",
-    "chalk": "^4.1.2",
-    "ora": "^5.4.1"
+    "chalk": "^5.3.0",
+    "ora": "^7.0.1"
   },
   "engines": {
     "node": ">=16.0.0"
