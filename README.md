@@ -30,6 +30,9 @@ npm install -g vibe-cli
 # Navigate to your project
 cd your-awesome-project
 
+# Analyze your project (optional but recommended)
+vibe analyze
+
 # Initialize the vibe system
 vibe init
 
@@ -103,24 +106,58 @@ description: "Advanced optimization - use only when requested"
 
 ## 🔧 Commands
 
-### `vibe init` - Setup
+### `vibe init` - Initial Setup
 ```bash
 vibe init                           # Auto-detect and setup all platforms
 vibe init --platforms cursor,claude # Setup specific platforms only
-vibe init --force                   # Overwrite existing configurations
+vibe init --full                    # Complete setup: migrate rules AND remove originals
 ```
 
-### `vibe status` - Monitor
+### `vibe sync` - Keep Rules Synchronized
+```bash
+vibe sync                           # Sync ALL rules from Cursor/Copilot directories
+vibe sync --platforms cursor        # Only sync from Cursor
+vibe sync --full                    # Sync rules AND remove originals
+vibe sync --dry-run                 # Preview what would be synced
+```
+
+**Perfect for teams:** When teammates add rules to `.cursor/rules/` or `.github/instructions/` directories, `vibe sync` refreshes your vibe/ directory with all current rules. Rules with the same name will be overwritten.
+
+### `vibe status` - Monitor System Health
 ```bash
 vibe status                         # Quick overview
 vibe status --verbose               # Detailed analysis with performance metrics
 ```
 
-### `vibe fix` - Maintain
+### `vibe fix` - Maintain Configuration
 ```bash
 vibe fix --dry-run                  # Preview fixes without applying
 vibe fix                            # Automatically resolve configuration issues
 ```
+
+### `vibe cleanup` - Remove Original Files
+```bash
+vibe cleanup                        # Remove files migrated by init (with backups)
+vibe cleanup --dry-run              # Preview what would be removed
+```
+
+**Note:** Only removes files that were migrated during `vibe init`. For ongoing maintenance, use `vibe sync --full` instead.
+
+### `vibe analyze` - Comprehensive Repository Analysis
+```bash
+vibe analyze                        # Full repository and AI configuration analysis
+vibe analyze --json                 # Output as JSON for automated processing
+vibe analyze --verbose              # Include detailed breakdowns
+vibe analyze --recommendations      # Focus on what's missing or needs updating
+```
+
+**NEW:** Get deep insights into your project:
+- 🔍 **Tech Stack Detection** - Automatically identifies your languages, frameworks, databases
+- 🤖 **AI Configuration Analysis** - Analyzes all your AI tool setups and token usage
+- 📊 **Rule Coverage Assessment** - Shows what's covered vs missing in your AI instructions
+- 🎯 **Gap Analysis** - Identifies missing rules for your specific tech stack
+- 🔧 **MCP Server Recommendations** - Suggests relevant MCP servers based on your actual stack
+- 📈 **AI Configuration Maturity Score** - Honest assessment of your AI setup quality
 
 ## 📁 Project Structure After Init
 
@@ -145,7 +182,52 @@ your-project/
 ✅ **Gemini CLI** - `GEMINI.md` files  
 ✅ **GitHub Copilot** - `.github/copilot-instructions.md` and `.github/instructions/*.instructions.md`
 
-Your existing rules get converted to the unified format with appropriate frontmatter.
+## 🔄 Common Workflows
+
+### Initial Project Setup
+```bash
+# Conservative approach (test first)
+vibe init                    # Setup system, keep original files
+vibe status                  # Verify everything works
+vibe cleanup                 # Remove originals when confident
+
+# Power user approach  
+vibe init --full            # Complete setup in one command
+```
+
+### Ongoing Team Collaboration
+```bash
+# Teammate added rules to .cursor/rules/ or .github/instructions/
+vibe sync                   # Refresh vibe/ with all platform rules
+vibe sync --full           # Sync and remove originals
+
+# Monthly maintenance
+vibe status --verbose       # Check performance and health  
+vibe fix                    # Resolve any configuration issues
+```
+
+### Platform-Specific Management
+```bash
+# Only work with specific platforms
+vibe init --platforms cursor,claude
+vibe sync --platforms copilot        # Sync only from Copilot
+
+# Preview changes safely
+vibe sync --dry-run                   # See what would be synced
+vibe cleanup --dry-run                # See what would be removed
+```
+
+### Repository Analysis & Optimization
+```bash
+# Understand your project's AI configuration maturity
+vibe analyze                          # Get comprehensive analysis report
+vibe analyze --recommendations        # Focus on actionable improvements
+
+# Use insights to improve your setup
+vibe init                            # Setup vibe system based on analysis
+# Create rules for detected gaps (MongoDB, Redis, etc.)
+# Install recommended MCP servers for your tech stack
+```
 
 ## 📊 Performance Monitoring
 
@@ -174,10 +256,13 @@ vibe status --verbose
 ## 🤝 Why Developers Love vibe-cli
 
 - 🎯 **Single Source of Truth** - Update rules once, apply everywhere
+- 🔍 **Intelligent Analysis** - Deep repository analysis with actionable insights
+- 🤖 **Smart MCP Recommendations** - Suggests relevant servers based on your actual tech stack
+- 📊 **Performance Aware** - Monitors context usage and provides optimization guidance
 - 🚀 **Zero Configuration** - Works out of the box with smart defaults
-- 📊 **Performance Aware** - Monitors context usage per platform
 - 🔧 **Self-Healing** - Automatically fixes common configuration issues
 - 🔄 **Migration Friendly** - Seamlessly imports existing rules
+- 📈 **Maturity Assessment** - Honest scoring of your AI configuration quality
 
 ## 🆘 Troubleshooting
 
@@ -190,6 +275,12 @@ vibe fix                 # Automatically resolve problems
 ### Performance issues?
 ```bash
 vibe status             # Check platform performance analysis
+```
+
+### Want to understand your project better?
+```bash
+vibe analyze            # Get comprehensive analysis and recommendations
+vibe analyze --verbose  # Detailed breakdown with specific suggestions
 ```
 
 ### Need help?
