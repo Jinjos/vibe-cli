@@ -21,11 +21,12 @@ Managing AI coding assistants is chaos:
 3. 🎯 **Smart enforcement** based on file types and context
 4. 🔄 **Easy updates** - change once, apply everywhere
 
-## 🚀 Quick Start
+## 🚀 Installation & Quick Start
 
+### Option 1: CLI Usage (Traditional)
 ```bash
-# Install globally
-npm install -g vibe-cli
+# Install the CLI globally
+npm install -g @jinjos/vibe-cli
 
 # Navigate to your project
 cd your-awesome-project
@@ -40,7 +41,22 @@ vibe init
 vibe status
 ```
 
-**That's it!** Your AI tools now share the same coding standards.
+### Option 2: MCP Integration (AI-First) 🤖
+For seamless AI integration with Claude, Cursor, or other MCP-compatible clients:
+
+```json
+{
+  "mcpServers": {
+    "vibe": {
+      "command": "npx",
+      "args": ["-y", "@jinjos/vibe-mcp"],
+      "cwd": "/path/to/your/project"
+    }
+  }
+}
+```
+
+**That's it!** Your AI tools now have direct access to vibe functionality and share the same coding standards.
 
 ## 📊 Platform Support
 
