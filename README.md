@@ -162,9 +162,7 @@ vibe cleanup --dry-run              # Preview what would be removed
 ### `vibe analyze` - Comprehensive Repository Analysis
 ```bash
 vibe analyze                        # Full repository and AI configuration analysis
-vibe analyze --json                 # Output as JSON for automated processing
-vibe analyze --verbose              # Include detailed breakdowns
-vibe analyze --recommendations      # Focus on what's missing or needs updating
+vibe analyze --verbose              # Include detailed breakdowns and token analysis
 ```
 
 **NEW:** Get deep insights into your project:
@@ -237,7 +235,7 @@ vibe cleanup --dry-run                # See what would be removed
 ```bash
 # Understand your project's AI configuration maturity
 vibe analyze                          # Get comprehensive analysis report
-vibe analyze --recommendations        # Focus on actionable improvements
+vibe analyze --verbose                # Detailed breakdown with performance metrics
 
 # Use insights to improve your setup
 vibe init                            # Setup vibe system based on analysis
