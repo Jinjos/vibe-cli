@@ -1,6 +1,6 @@
 {
   "name": "@jinjos/vibe-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "🔥 One vibe to rule them all - Unify AI coding rules across Claude, Cursor, Copilot & Gemini",
   "main": "lib/index.js",
   "bin": {
