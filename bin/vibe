@@ -5,6 +5,9 @@ const chalk = require('chalk');
 const { initializeVibeSystem } = require('../lib/init');
 const { showStatus } = require('../lib/status');
 const { fixRuleIssues } = require('../lib/fix');
+const { cleanupOriginalRules } = require('../lib/cleanup');
+const { syncVibeSystem } = require('../lib/sync');
+const { analyzeRepository } = require('../lib/analyzer');
 
 const program = new Command();
 
@@ -16,19 +19,30 @@ ${chalk.magenta('🔥 vibe-cli')} ${chalk.gray('- Universal AI Rules System')}
 program
   .name('vibe')
   .description('🔥 Universal AI Rules System - Unify AI coding assistant rules across all platforms')
-  .version('1.0.0')
+  .version('1.0.1')
   .addHelpText('before', vibeArt);
 
 program
   .command('init')
   .description('Initialize the vibe system in current project')
-  .option('--platforms <platforms>', 'Comma-separated platforms (cursor,claude,copilot,gemini)', 'auto')
-  .option('--force', 'Overwrite existing configurations')
-  .option('--backup', 'Create backup of existing rule files', true)
+  .option('--platforms <platforms>', 'Comma-separated platforms: cursor,claude,copilot,gemini (default: auto - all platforms)')
+  .option('--full', 'Complete setup: migrate rules AND remove originals in one command')
+  .addHelpText('after', `
+Examples:
+  $ vibe init                           Initialize all platforms, keep originals
+  $ vibe init --platforms cursor,claude Only setup Cursor and Claude
+  $ vibe init --full                   Migrate and remove originals (end-to-end)`)
   .action(async (options) => {
     try {
       console.log(vibeArt);
-      await initializeVibeSystem(process.cwd(), options);
+      const result = await initializeVibeSystem(process.cwd(), options);
+      
+      // If --full flag, also run cleanup
+      if (options.full && result.migratedRules && result.migratedRules.length > 0) {
+        await cleanupOriginalRules(process.cwd(), result.migratedRules, { 
+          force: true
+        });
+      }
     } catch (error) {
       console.error(chalk.red('❌ Error initializing vibe system:'), error.message);
       if (process.env.DEBUG) {
@@ -39,9 +53,79 @@ program
   });
 
 program
+  .command('sync')
+  .description('Sync ALL rules from platform directories to vibe system')
+  .option('--platforms <platforms>', 'Comma-separated platforms to sync: cursor,copilot,claude (default: all with directories)')
+  .option('--full', 'Move rules to vibe system AND remove originals (like init --full)')
+  .option('--dry-run', 'Show what would be synced without making changes')
+  .addHelpText('after', `
+Examples:
+  $ vibe sync                          Sync all rules from platform directories (keep originals)
+  $ vibe sync --platforms cursor       Only sync from Cursor
+  $ vibe sync --full                   Sync rules and remove originals
+  $ vibe sync --dry-run                Preview what would be synced
+  
+Use Cases:
+  • Team member added rules to .cursor/rules/, .github/instructions/, or .claude/
+  • New rules appeared in platform directories after vibe init
+  • Want to refresh vibe/ with latest rules from platforms
+  • Rules with same name will be overwritten (shown in summary)`)
+  .action(async (options) => {
+    try {
+      console.log(vibeArt);
+      const result = await syncVibeSystem(process.cwd(), options);
+      
+      if (result.dryRun) {
+        console.log(chalk.blue('\n💡 Run without --dry-run to apply changes'));
+      }
+    } catch (error) {
+      console.error(chalk.red('❌ Error syncing vibe system:'), error.message);
+      if (process.env.DEBUG) {
+        console.error(error.stack);
+      }
+      process.exit(1);
+    }
+  });
+
+program
+  .command('cleanup')
+  .description('Remove original rule files that were migrated during vibe init')
+  .option('--dry-run', 'Show what would be removed without making changes')
+  .addHelpText('after', `
+Examples:
+  $ vibe cleanup                       Remove files migrated by init (with backups)
+  $ vibe cleanup --dry-run             Preview what would be removed
+  
+Note:
+  • Only removes files that were migrated during 'vibe init'
+  • For new rules added after init, use 'vibe sync --full' instead
+  • Always creates backups before removing files`)
+  .action(async (options) => {
+    try {
+      const migratedRules = await loadMigrationData(process.cwd());
+      
+      if (migratedRules.length === 0) {
+        console.log(chalk.yellow('⚠️  No migrated rules found to cleanup'));
+        console.log(chalk.blue('💡 Run'), chalk.cyan('vibe init'), chalk.blue('first to migrate rules'));
+        return;
+      }
+
+      await cleanupOriginalRules(process.cwd(), migratedRules, options);
+    } catch (error) {
+      console.error(chalk.red('❌ Error during cleanup:'), error.message);
+      process.exit(1);
+    }
+  });
+
+program
   .command('status')
   .description('Show vibe system status and detected platforms')
-  .option('-v, --verbose', 'Show detailed information including rule analysis')
+  .option('-v, --verbose', 'Show detailed information including rule analysis and platform notes')
+  .addHelpText('after', `
+Examples:
+  $ vibe status                        Quick overview of system status
+  $ vibe status --verbose              Detailed analysis with token usage
+  $ vibe status -v                     Short flag for verbose mode`)
   .action(async (options) => {
     try {
       await showStatus(process.cwd(), options);
@@ -55,7 +139,10 @@ program
   .command('fix')
   .description('Automatically fix detected rule configuration issues')
   .option('--dry-run', 'Show what would be fixed without making changes')
-  .option('--backup', 'Create backup before fixing', true)
+  .addHelpText('after', `
+Examples:
+  $ vibe fix                           Fix configuration issues automatically
+  $ vibe fix --dry-run                 Preview fixes without applying them`)
   .action(async (options) => {
     try {
       await fixRuleIssues(process.cwd(), options);
@@ -64,6 +151,68 @@ program
       process.exit(1);
     }
   });
+
+program
+  .command('analyze')
+  .description('Comprehensive repository analysis with AI configuration insights')
+  .option('--json', 'Output analysis as JSON for tooling')
+  .option('-v, --verbose', 'Include detailed file contents and analysis')
+  .option('--recommendations', 'Focus on gaps and recommendations')
+  .addHelpText('after', `
+Examples:
+  $ vibe analyze                       Full repository and AI configuration analysis
+  $ vibe analyze --json                Output as JSON for automated processing
+  $ vibe analyze --verbose             Include detailed breakdowns
+  $ vibe analyze --recommendations     Focus on what's missing or needs updating
+
+Provides insights on:
+  • Tech stack detection and architecture patterns
+  • Existing AI tool configurations across all platforms
+  • Rule coverage and categorization analysis
+  • Gap analysis with specific recommendations
+  • MCP server suggestions based on your stack
+  • AI configuration maturity assessment`)
+  .action(async (options) => {
+    try {
+      await analyzeRepository(process.cwd(), options);
+    } catch (error) {
+      console.error(chalk.red('❌ Error analyzing repository:'), error.message);
+      if (process.env.DEBUG || options.verbose) {
+        console.error(error.stack);
+      }
+      process.exit(1);
+    }
+  });
+
+// Add global help text
+program.addHelpText('after', `
+Supported Platforms:
+  cursor    Cursor IDE (.cursor/rules/*.mdc)
+  claude    Claude Code (CLAUDE.md)  
+  copilot   GitHub Copilot (.github/instructions/*.instructions.md)
+  gemini    Gemini CLI (GEMINI.md)
+
+Common Workflows:
+  Initial Setup:    vibe init → test → vibe cleanup
+  Power User:       vibe init --full
+  Selective Setup:  vibe init --platforms cursor,claude
+  
+  Repository Analysis: vibe analyze (understand your project)
+  Ongoing Sync:     vibe sync (refresh vibe/ with all platform rules)
+  Full Sync:        vibe sync --full (sync + remove originals)
+  Safe Preview:     vibe sync --dry-run
+  
+  Note: 'vibe cleanup' only removes files from initial 'vibe init'
+        For ongoing maintenance, use 'vibe sync --full'
+`);
+
+/**
+ * Load migration data to know what files were migrated
+ */
+async function loadMigrationData(projectPath) {
+  const { loadMigrationData } = require('../lib/cleanup');
+  return await loadMigrationData(projectPath);
+}
 
 // Handle unknown commands
 program.on('command:*', () => {

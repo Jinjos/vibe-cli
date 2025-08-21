@@ -110,3 +110,6 @@ Thumbs.db
 
 # Backup files
 *.backup
+
+# Context file for AI assistants
+CONTEXT.md
