@@ -1,4 +1,4 @@
-# vibe-cli 🔥
+# Vibe AI 🔥
 
 > **One vibe to rule them all** - Unify your AI coding assistants with shared standards
 
@@ -21,9 +21,38 @@ Managing AI coding assistants is chaos:
 3. 🎯 **Smart enforcement** based on file types and context
 4. 🔄 **Easy updates** - change once, apply everywhere
 
+## 🎬 See It In Action
+
+### � Before Vibe: AI Rules Chaos
+[![No AI Rules - Repository Analysis](https://img.youtube.com/vi/M7DKSuc9KXE/0.jpg)](https://youtu.be/M7DKSuc9KXE)
+
+*See what happens when your repository has no AI rules configured*
+
+### ✨ After Vibe: Unified AI Standards  
+[![Vibe Combined Rules Working](https://img.youtube.com/vi/MWqZc-JK8VM/0.jpg)](https://youtu.be/MWqZc-JK8VM)
+
+*Watch AI assistants working together with vibe's unified coding standards*
+
 ## 🚀 Installation & Quick Start
 
-### Option 1: CLI Usage (Traditional)
+### Option 1: MCP Integration (AI-First) 🤖 ⭐ **Recommended**
+For seamless AI integration with Claude, Cursor, or other MCP-compatible clients:
+
+```json
+{
+  "mcpServers": {
+    "vibe": {
+      "command": "npx",
+      "args": ["-y", "@jinjos/vibe-mcp"],
+      "cwd": "/path/to/your/project"
+    }
+  }
+}
+```
+
+**That's it!** Your AI tools now have direct access to vibe functionality and share the same coding standards.
+
+### Option 2: CLI Usage (Traditional)
 ```bash
 # Install the CLI globally
 npm install -g @jinjos/vibe-cli
@@ -41,8 +70,32 @@ vibe init
 vibe status
 ```
 
-### Option 2: MCP Integration (AI-First) 🤖
-For seamless AI integration with Claude, Cursor, or other MCP-compatible clients:
+## 🤖 Advanced MCP Integration
+
+The **[@jinjos/vibe-mcp](https://npmjs.com/package/@jinjos/vibe-mcp)** package provides AI-first access to all vibe functionality through the Model Context Protocol (MCP). This allows your AI assistant to directly manage your coding standards without leaving the development environment.
+
+### 🎯 Why Choose MCP Integration?
+
+**🔄 Seamless AI Workflow**
+- No context switching between terminal and AI chat
+- AI can analyze, initialize, and manage rules directly
+- Real-time project insights during development
+
+**📊 Enhanced AI Context**
+- AI gets structured JSON data (no parsing issues)  
+- Rich project analysis with tech stack detection
+- Actionable recommendations based on your actual code
+
+**⚡ Zero Configuration**
+- Auto-bundles vibe-cli dependency
+- Works with any MCP-compatible AI client
+- Hot reload when project structure changes
+
+### 🛠️ Client-Specific Setup
+
+**Claude Desktop:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -56,7 +109,92 @@ For seamless AI integration with Claude, Cursor, or other MCP-compatible clients
 }
 ```
 
-**That's it!** Your AI tools now have direct access to vibe functionality and share the same coding standards.
+**Cursor/VS Code with MCP:**
+```json
+{
+  "mcpServers": {
+    "vibe": {
+      "command": "npx", 
+      "args": ["-y", "@jinjos/vibe-mcp"]
+    }
+  }
+}
+```
+
+**Workspace-Specific Configuration:**
+For projects with different requirements, create workspace-specific configs:
+
+```json
+{
+  "mcpServers": {
+    "vibe-frontend": {
+      "command": "npx",
+      "args": ["-y", "@jinjos/vibe-mcp"],
+      "cwd": "/path/to/frontend-project"
+    },
+    "vibe-backend": {
+      "command": "npx", 
+      "args": ["-y", "@jinjos/vibe-mcp"],
+      "cwd": "/path/to/backend-project"
+    }
+  }
+}
+```
+
+### 🚀 Available MCP Tools
+
+Once configured, your AI assistant gains access to these tools:
+
+| Tool | Purpose | Use Case |
+|------|---------|----------|
+| **`repo_analysis`** | Comprehensive project analysis | "Analyze my project's AI configuration maturity" |
+| **`init_rules`** | Initialize vibe system | "Set up vibe for this React/Node.js project" |
+| **`sync_rules`** | Synchronize rules across platforms | "Sync my Cursor rules to all AI platforms" |
+| **`vibe_status`** | Get system health and performance | "Check my vibe configuration status" |
+
+### 📈 MCP vs CLI Comparison
+
+| Feature | CLI | MCP Integration |
+|---------|-----|-----------------|
+| **Setup** | `npm install -g @jinjos/vibe-cli` | Add to MCP config |
+| **Usage** | Terminal commands | Natural AI conversation |
+| **Output** | Formatted console | Structured JSON |
+| **Context** | Manual execution | AI-driven automation |
+| **Workflow** | Context switching | Seamless integration |
+
+### 🔧 Troubleshooting MCP
+
+**Server fails to start:**
+```bash
+# Check dependency compatibility
+npx -y @jinjos/vibe-mcp --check-deps
+```
+
+**AI can't see vibe tools:**
+- Restart your AI client after config changes
+- Verify `cwd` path exists and is accessible
+- Check Node.js version (18.0.0+ required)
+
+**Performance issues:**
+```bash
+# Enable debug logging
+VIBE_LOG_LEVEL=3 npx -y @jinjos/vibe-mcp
+```
+
+### 🌟 Pro Tips
+
+**Multi-Project Workflow:**
+Configure different vibe servers for each project to get context-aware recommendations.
+
+**Development Teams:**  
+Share MCP configurations in your project's `.vscode/settings.json` for consistent team setup.
+
+**Advanced Usage:**
+Combine MCP integration with CLI for the best of both worlds - use MCP for analysis and AI-driven tasks, CLI for scripting and automation.
+
+---
+
+**Ready to supercharge your AI coding experience?** Install [@jinjos/vibe-mcp](https://npmjs.com/package/@jinjos/vibe-mcp) and let your AI assistant manage your coding standards intelligently.
 
 ## 📊 Platform Support
 
